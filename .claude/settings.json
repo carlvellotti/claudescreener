@@ -1,0 +1,24 @@
+{
+  "name": "claudescreener",
+  "displayName": "ClaudeScreener",
+  "description": "Solana meme coin scam detection tools for Claude Code",
+  "version": "1.0.0",
+  "skills": {
+    "tokenscreen": {
+      "path": "skills/tokenscreen",
+      "description": "Analyze a Solana token for safety risks"
+    },
+    "walletscreen": {
+      "path": "skills/walletscreen",
+      "description": "Analyze a wallet's token launch history"
+    },
+    "bundlecheck": {
+      "path": "skills/bundlecheck",
+      "description": "Detect coordinated sniping at token launch"
+    },
+    "setup": {
+      "path": "skills/setup",
+      "description": "Configure API keys for ClaudeScreener"
+    }
+  }
+}

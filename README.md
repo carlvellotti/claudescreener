@@ -9,6 +9,7 @@ Before you ape into a token, run 3 checks in 30 seconds:
 | `/tokenscreen` | Is this token safe? | Rug score, mint/freeze authority, LP locks, holder concentration, creator history |
 | `/walletscreen` | Is this developer legit? | Launch history, rug rate, serial launcher detection, wallet age |
 | `/bundlecheck` | Was this launch manipulated? | Block 0 sniping, coordinated buys, supply concentration at launch |
+| `/setup` | How do I configure this? | Guided API key setup and troubleshooting |
 
 ## The Problem
 
@@ -53,7 +54,20 @@ HELIUS_API_KEY=your_helius_key_here
 BAGS_API_KEY=your_bags_key_here  # Optional, for BAGS token creator info
 ```
 
-### 4. Use the skills
+### 4. Configure API keys
+
+Run the setup skill for guided configuration:
+
+```
+/setup
+```
+
+Or manually set environment variables:
+```bash
+export HELIUS_API_KEY=your_key_here
+```
+
+### 5. Use the skills
 
 ```
 /tokenscreen 7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr
