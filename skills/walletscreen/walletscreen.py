@@ -63,6 +63,24 @@ def get_helius_api_key() -> str | None:
     return load_env_var("HELIUS_API_KEY")
 
 
+def require_helius_api_key() -> str:
+    """Check for Helius API key and exit with helpful message if missing."""
+    value = get_helius_api_key()
+    if not value:
+        print("ERROR: HELIUS_API_KEY not found", file=sys.stderr)
+        print("", file=sys.stderr)
+        print("WalletScreen requires a Helius API key to fetch transaction history.", file=sys.stderr)
+        print("", file=sys.stderr)
+        print("Setup:", file=sys.stderr)
+        print("  1. Get a free API key at: https://helius.dev", file=sys.stderr)
+        print("  2. Set it: export HELIUS_API_KEY=your_key_here", file=sys.stderr)
+        print("     Or add to .env file: HELIUS_API_KEY=your_key_here", file=sys.stderr)
+        print("", file=sys.stderr)
+        print("Run /claudescreener:setup for guided setup help.", file=sys.stderr)
+        sys.exit(1)
+    return value
+
+
 def get_rugcheck_summary(mint: str) -> dict | None:
     """Fetch lightweight RugCheck summary for a token."""
     url = f"https://api.rugcheck.xyz/v1/tokens/{mint}/report/summary"
@@ -529,9 +547,7 @@ def main():
         sys.exit(1)
 
     # Check for Helius API key
-    if not get_helius_api_key():
-        print("Error: HELIUS_API_KEY not found in environment or .env file")
-        sys.exit(1)
+    require_helius_api_key()
 
     print(f"Analyzing wallet: {wallet}...", file=sys.stderr)
 

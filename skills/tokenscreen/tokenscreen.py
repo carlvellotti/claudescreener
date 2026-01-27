@@ -44,6 +44,24 @@ def load_env_var(var_name: str) -> str | None:
     return None
 
 
+def require_api_key(var_name: str, service_name: str, signup_url: str) -> str:
+    """Check for required API key and exit with helpful message if missing."""
+    value = load_env_var(var_name)
+    if not value:
+        print(f"ERROR: {var_name} not found", file=sys.stderr)
+        print("", file=sys.stderr)
+        print(f"To use ClaudeScreener, you need a {service_name} API key.", file=sys.stderr)
+        print("", file=sys.stderr)
+        print("Setup:", file=sys.stderr)
+        print(f"  1. Get a free API key at: {signup_url}", file=sys.stderr)
+        print(f"  2. Set it: export {var_name}=your_key_here", file=sys.stderr)
+        print(f"     Or add to .env file: {var_name}=your_key_here", file=sys.stderr)
+        print("", file=sys.stderr)
+        print("Run /claudescreener:setup for guided setup help.", file=sys.stderr)
+        sys.exit(1)
+    return value
+
+
 def fetch_json(url: str, headers: dict = None, timeout: int = 10) -> dict | None:
     """Fetch JSON from URL with error handling."""
     try:
@@ -248,7 +266,10 @@ def analyze_royalty_recipient(wallet: str, token_mint: str, twitter_handle: str 
     # Get transaction history (Helius max limit is 100)
     txs = get_helius_transactions(wallet, limit=100)
     if not txs:
-        lines.append("*Could not fetch transaction history (check HELIUS_API_KEY)*")
+        lines.append("*Could not fetch transaction history*")
+        lines.append("")
+        lines.append("**Setup required:** Get a free Helius API key at https://helius.dev")
+        lines.append("Then: `export HELIUS_API_KEY=your_key` or add to .env file")
         return "\n".join(lines)
 
     # Analyze transactions
