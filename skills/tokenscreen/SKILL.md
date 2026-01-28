@@ -91,4 +91,7 @@ Set these as environment variables or create a `.env` file in the script directo
 - Very new tokens (< 5 min) may not be indexed by RugCheck yet
 - Data is cached briefly; real-time conditions may differ
 - BAGS API only works for tokens launched through BAGS platform
-- This is not financial advice - always DYOR
+
+## ⚠️ Disclaimer
+
+**This is not financial advice. No investment is 100% safe.** On-chain data cannot detect team coordination, social engineering, or planned dumps. Even tokens that pass all checks can still fail or rug. Never invest more than you can afford to lose. DYOR.

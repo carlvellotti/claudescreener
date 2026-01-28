@@ -20,6 +20,21 @@ This is a $CCFE project. Claude Code for Everyone aims to bring the power of Cla
 
 ---
 
+## ⚠️ Disclaimer
+
+**This is not financial advice. No investment is 100% safe.**
+
+These tools analyze on-chain data to help identify potential risks, but they **cannot guarantee safety**. They cannot detect:
+- Team coordination and insider planning
+- Social engineering and fake communities
+- "Slow rugs" where devs gradually sell over weeks
+- Scams that happen after the analysis window
+- Wallets that appear independent but are controlled by one person
+
+Even tokens that pass all checks can still fail or rug. **Never invest more than you can afford to lose.** Always do your own research (DYOR) and treat any meme coin investment as high-risk speculation.
+
+---
+
 ## The Problem
 
 - **98.7%** of Pump.fun tokens exhibit scam characteristics
