@@ -53,10 +53,14 @@ ClaudeScreener consolidates data from multiple sources (RugCheck, DexScreener, H
 ### Option A: Install as Plugin (Recommended)
 
 ```bash
-/plugin install carlvellotti/claudescreener
+# Step 1: Add the marketplace
+/plugin marketplace add carlvellotti/claudescreener
+
+# Step 2: Install the plugin
+/plugin install claudescreener@claudescreener
 ```
 
-That's it! The plugin will be available immediately. Skills are namespaced as:
+After installation, skills are namespaced as:
 - `/claudescreener:tokenscreen`
 - `/claudescreener:walletscreen`
 - `/claudescreener:bundlecheck`
