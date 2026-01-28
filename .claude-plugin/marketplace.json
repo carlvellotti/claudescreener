@@ -7,7 +7,7 @@
   "plugins": [
     {
       "name": "claudescreener",
-      "source": ".",
+      "source": "./",
       "description": "Solana token safety analysis - check tokens, wallets, and launch manipulation",
       "version": "1.0.0",
       "author": {
