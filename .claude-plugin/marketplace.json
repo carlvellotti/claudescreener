@@ -1,12 +1,18 @@
 {
-  "name": "ClaudeScreener",
-  "description": "Solana token safety analysis tools",
+  "name": "claudescreener",
+  "owner": {
+    "name": "Carl Vellotti",
+    "email": "carlvellotti@gmail.com"
+  },
   "plugins": [
     {
       "name": "claudescreener",
+      "source": ".",
       "description": "Solana token safety analysis - check tokens, wallets, and launch manipulation",
       "version": "1.0.0",
-      "path": "."
+      "author": {
+        "name": "Carl Vellotti"
+      }
     }
   ]
 }
