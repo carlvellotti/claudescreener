@@ -12,6 +12,7 @@ Usage:
 import sys
 import json
 import os
+import ssl
 import urllib.request
 import urllib.error
 from datetime import datetime, timezone
@@ -28,10 +29,13 @@ def load_env_var(var_name: str) -> str | None:
     if value:
         return value
 
+    script_dir = os.path.dirname(__file__)
     env_paths = [
         ".env",
-        os.path.join(os.path.dirname(__file__), ".env"),
-        os.path.join(os.path.dirname(__file__), "..", "..", ".env"),
+        os.path.join(script_dir, ".env"),
+        os.path.join(script_dir, "..", ".env"),
+        os.path.join(script_dir, "..", "..", ".env"),
+        os.path.join(script_dir, "..", "..", "..", ".env"),  # vault root
     ]
 
     for env_path in env_paths:
@@ -69,7 +73,10 @@ def fetch_json(url: str, headers: dict = None, timeout: int = 30) -> dict | None
         if headers:
             req_headers.update(headers)
         req = urllib.request.Request(url, headers=req_headers)
-        with urllib.request.urlopen(req, timeout=timeout) as response:
+        ssl_context = ssl.create_default_context()
+        ssl_context.check_hostname = False
+        ssl_context.verify_mode = ssl.CERT_NONE
+        with urllib.request.urlopen(req, timeout=timeout, context=ssl_context) as response:
             return json.loads(response.read().decode())
     except urllib.error.HTTPError as e:
         if e.code in (400, 404):
