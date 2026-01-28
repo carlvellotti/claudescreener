@@ -50,7 +50,19 @@ ClaudeScreener consolidates data from multiple sources (RugCheck, DexScreener, H
 
 ## Quick Start
 
-### 1. Install the skills
+### Option A: Install as Plugin (Recommended)
+
+```bash
+/plugin install carlvellotti/claudescreener
+```
+
+That's it! The plugin will be available immediately. Skills are namespaced as:
+- `/claudescreener:tokenscreen`
+- `/claudescreener:walletscreen`
+- `/claudescreener:bundlecheck`
+- `/claudescreener:setup`
+
+### Option B: Manual Installation
 
 Copy the `skills/` folder to your Claude Code skills directory:
 
@@ -58,7 +70,11 @@ Copy the `skills/` folder to your Claude Code skills directory:
 cp -r skills/* ~/.claude/skills/
 ```
 
-### 2. Get API keys
+With manual installation, skills are available as `/tokenscreen`, `/walletscreen`, etc.
+
+---
+
+### API Keys
 
 You need **one required API key** (Helius). BAGS is optional.
 

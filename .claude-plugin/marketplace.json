@@ -1,0 +1,12 @@
+{
+  "name": "ClaudeScreener",
+  "description": "Solana token safety analysis tools",
+  "plugins": [
+    {
+      "name": "claudescreener",
+      "description": "Solana token safety analysis - check tokens, wallets, and launch manipulation",
+      "version": "1.0.0",
+      "path": "."
+    }
+  ]
+}

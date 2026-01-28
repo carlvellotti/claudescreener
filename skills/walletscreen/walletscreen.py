@@ -247,9 +247,10 @@ def classify_token_outcome(mint: str) -> dict:
 
     # Get RugCheck data
     rugcheck = get_rugcheck_summary(mint)
-    if rugcheck:
-        result["symbol"] = rugcheck.get("tokenMeta", {}).get("symbol", "???")
-        result["name"] = rugcheck.get("tokenMeta", {}).get("name", "Unknown")
+    if rugcheck and isinstance(rugcheck, dict):
+        token_meta = rugcheck.get("tokenMeta") or {}
+        result["symbol"] = token_meta.get("symbol", "???")
+        result["name"] = token_meta.get("name", "Unknown")
 
         if rugcheck.get("rugged"):
             result["status"] = "RUGGED"

@@ -1,0 +1,12 @@
+{
+  "name": "claudescreener",
+  "description": "Solana token safety analysis tools - check tokens, wallets, and launch manipulation",
+  "version": "1.0.0",
+  "author": {
+    "name": "Carl Vellotti",
+    "url": "https://x.com/carlvellotti"
+  },
+  "repository": "https://github.com/carlvellotti/claudescreener",
+  "keywords": ["solana", "crypto", "token", "safety", "rug", "memecoin"],
+  "license": "MIT"
+}
