@@ -1,6 +1,6 @@
 # ClaudeScreener
 
-**Three Claude Code skills to detect scams and stay safe in Solana meme coins.**
+**Three Claude Code skills to detect scams and stay safe in Solana meme coins. A $CCFE project.**
 
 Before you ape into a token, run 3 checks in 30 seconds:
 
@@ -10,6 +10,15 @@ Before you ape into a token, run 3 checks in 30 seconds:
 | `/walletscreen` | Is this developer legit? | Launch history, rug rate, serial launcher detection, wallet age |
 | `/bundlecheck` | Was this launch manipulated? | Block 0 sniping, coordinated buys, supply concentration at launch |
 | `/setup` | How do I configure this? | Guided API key setup and troubleshooting |
+
+## $CCFE Project
+
+This is a $CCFE project. Claude Code for Everyone aims to bring the power of Claude Code to everyone with free, accessible courses done IN Claude Code.
+
+- **Website:** [ccforeveryone.com](https://ccforeveryone.com)
+- **Coin:** [https://bags.fm/9vVh1mamReHwwHx8GShKr7vZsVWCKYWN514BmRvSBAGS](https://bags.fm/9vVh1mamReHwwHx8GShKr7vZsVWCKYWN514BmRvSBAGS)
+
+---
 
 ## The Problem
 
