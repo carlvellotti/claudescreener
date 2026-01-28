@@ -292,6 +292,10 @@ def analyze_royalty_recipient(wallet: str, token_mint: str, twitter_handle: str 
     created_mints = []  # Store actual mint addresses
     seen_mints = set()
 
+    # Track token flows for sell detection
+    tokens_received = 0
+    tokens_sent = 0
+
     for tx in txs:
         tx_type = tx.get("type", "UNKNOWN")
         desc = tx.get("description", "")
@@ -321,6 +325,25 @@ def analyze_royalty_recipient(wallet: str, token_mint: str, twitter_handle: str 
                 seen_mints.add(mint)
                 created_mints.append(mint)
 
+        # Track token transfers IN and OUT for this specific token
+        for transfer in tx.get("tokenTransfers", []):
+            if transfer.get("mint") != token_mint:
+                continue
+
+            amount = transfer.get("tokenAmount", 0)
+            if not amount:
+                continue
+
+            from_addr = transfer.get("fromUserAccount", "")
+            to_addr = transfer.get("toUserAccount", "")
+
+            # Tokens received
+            if to_addr == wallet:
+                tokens_received += amount
+            # Tokens sent out (sold or transferred)
+            elif from_addr == wallet:
+                tokens_sent += amount
+
     # Get current holdings
     balances = get_helius_balances(wallet)
     token_balance = 0
@@ -347,6 +370,13 @@ def analyze_royalty_recipient(wallet: str, token_mint: str, twitter_handle: str 
     signals = []
     red_flags = []
 
+    # Calculate sell ratio
+    total_tokens_handled = tokens_received + token_balance  # received + any pre-existing
+    sell_ratio = 0
+    if tokens_sent > 0 and (tokens_sent + token_balance) > 0:
+        # Sell ratio = sold / (sold + current holdings)
+        sell_ratio = tokens_sent / (tokens_sent + token_balance)
+
     # Fee claims
     if total_sol_received > 0:
         signals.append(f"✅ Claimed ~{total_sol_received:.2f} SOL in fees")
@@ -357,9 +387,23 @@ def analyze_royalty_recipient(wallet: str, token_mint: str, twitter_handle: str 
     if total_burned > 0:
         signals.append(f"✅ Burned {total_burned:,.0f} tokens (buyback & burn)")
 
+    # Sell ratio analysis (most important for detecting soft rugs)
+    if tokens_sent > 0:
+        if sell_ratio >= 0.9:
+            red_flags.append(f"🚨 DUMPED {sell_ratio*100:.0f}% of tokens ({tokens_sent:,.0f} sold)")
+        elif sell_ratio >= 0.7:
+            red_flags.append(f"⚠️ Sold {sell_ratio*100:.0f}% of tokens ({tokens_sent:,.0f} sold)")
+        elif sell_ratio >= 0.5:
+            signals.append(f"ℹ️ Sold {sell_ratio*100:.0f}% of tokens ({tokens_sent:,.0f} sold)")
+        else:
+            signals.append(f"✅ Only sold {sell_ratio*100:.0f}% of tokens")
+
     # Current holdings
     if token_balance > 0:
-        signals.append(f"✅ Holding {token_balance:,.0f} tokens (skin in the game)")
+        if sell_ratio < 0.5:
+            signals.append(f"✅ Holding {token_balance:,.0f} tokens (skin in the game)")
+        else:
+            signals.append(f"ℹ️ Still holding {token_balance:,.0f} tokens")
     else:
         red_flags.append("⚠️ Not holding any tokens")
 
@@ -413,11 +457,35 @@ def analyze_royalty_recipient(wallet: str, token_mint: str, twitter_handle: str 
         else:
             launch_signal = "ℹ️ Check history"
 
+    # Determine sell signal for table
+    if tokens_sent > 0:
+        if sell_ratio >= 0.9:
+            sell_signal = "🚨 MAJOR DUMP"
+        elif sell_ratio >= 0.7:
+            sell_signal = "⚠️ Heavy selling"
+        elif sell_ratio >= 0.5:
+            sell_signal = "ℹ️ Moderate"
+        else:
+            sell_signal = "✅ Minimal"
+    else:
+        sell_signal = "✅ No sells"
+
+    # Determine holdings signal
+    if token_balance > 0:
+        if sell_ratio >= 0.7:
+            holdings_signal = "⚠️ Reduced"
+        else:
+            holdings_signal = "✅ Aligned"
+    else:
+        holdings_signal = "🚨 None"
+
     lines.append("| Metric | Value | Signal |")
     lines.append("|--------|-------|--------|")
     lines.append(f"| Fee Claims | {total_sol_received:.2f} SOL | {'✅ Active' if total_sol_received > 0 else 'ℹ️ None yet'} |")
     lines.append(f"| Tokens Burned | {total_burned:,.0f} | {'✅ Buyback & burn' if total_burned > 0 else '—'} |")
-    lines.append(f"| Current Holdings | {token_balance:,.0f} | {'✅ Aligned' if token_balance > 0 else '⚠️ None'} |")
+    if tokens_sent > 0 or tokens_received > 0:
+        lines.append(f"| Tokens Sold | {tokens_sent:,.0f} ({sell_ratio*100:.0f}%) | {sell_signal} |")
+    lines.append(f"| Current Holdings | {token_balance:,.0f} | {holdings_signal} |")
     lines.append(f"| Other Launches | {total_launches} | {launch_signal} |")
     lines.append("")
 
