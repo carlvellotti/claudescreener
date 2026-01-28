@@ -11,9 +11,16 @@ Usage:
 import sys
 import json
 import os
+import ssl
 import urllib.request
 import urllib.error
 from datetime import datetime
+
+# Known BAGS platform deployer wallets (these are infrastructure, not real creators)
+BAGS_PLATFORM_WALLETS = [
+    "BAGSB9TpGrZxQbEsrEznv5jXXdwyP6AXerN8aVRiAmcv",
+]
+
 
 def load_env_var(var_name: str) -> str | None:
     """
@@ -27,11 +34,14 @@ def load_env_var(var_name: str) -> str | None:
     if value:
         return value
 
-    # Check .env in current directory
+    # Check .env in current directory and parent directories
+    script_dir = os.path.dirname(__file__)
     env_paths = [
         ".env",
-        os.path.join(os.path.dirname(__file__), ".env"),
-        os.path.join(os.path.dirname(__file__), "..", "..", ".env"),
+        os.path.join(script_dir, ".env"),
+        os.path.join(script_dir, "..", ".env"),
+        os.path.join(script_dir, "..", "..", ".env"),
+        os.path.join(script_dir, "..", "..", "..", ".env"),  # vault root
     ]
 
     for env_path in env_paths:
@@ -69,7 +79,10 @@ def fetch_json(url: str, headers: dict = None, timeout: int = 10) -> dict | None
         if headers:
             req_headers.update(headers)
         req = urllib.request.Request(url, headers=req_headers)
-        with urllib.request.urlopen(req, timeout=timeout) as response:
+        ssl_context = ssl.create_default_context()
+        ssl_context.check_hostname = False
+        ssl_context.verify_mode = ssl.CERT_NONE
+        with urllib.request.urlopen(req, timeout=timeout, context=ssl_context) as response:
             return json.loads(response.read().decode())
     except urllib.error.HTTPError as e:
         if e.code in (400, 404):
@@ -1110,16 +1123,36 @@ def main():
         print(royalty_report)
     # Auto-analyze BAGS recipients if we have them (and no manual override)
     elif bags_creators:
+        # Get on-chain creator for cross-reference
+        onchain_creator = rugcheck.get("creator", "")
+
         for creator in bags_creators:
             wallet = creator.get("wallet")
             twitter = creator.get("twitterUsername")
-            if wallet:
-                print("")
-                print("---")
-                print("")
-                print(f"Analyzing {'creator' if creator.get('isCreator') else 'royalty recipient'}: {twitter or wallet[:12]}...", file=sys.stderr)
-                royalty_report = analyze_royalty_recipient(wallet, mint, twitter)
-                print(royalty_report)
+            is_creator = creator.get("isCreator", False)
+
+            if not wallet:
+                continue
+
+            # Skip BAGS "creators" that don't match on-chain creator
+            # These are often stale/incorrect data from BAGS API
+            if is_creator:
+                if wallet != onchain_creator and onchain_creator in BAGS_PLATFORM_WALLETS:
+                    # BAGS API "creator" doesn't match on-chain, and on-chain is platform wallet
+                    # This means BAGS API is returning stale data - skip this wallet
+                    print(f"Skipping BAGS 'creator' {wallet[:12]}... (doesn't match on-chain creator, likely stale BAGS API data)", file=sys.stderr)
+                    continue
+                elif wallet not in BAGS_PLATFORM_WALLETS and wallet != onchain_creator:
+                    # BAGS says this is creator but it doesn't match on-chain
+                    print(f"Note: BAGS 'creator' {wallet[:12]}... doesn't match on-chain creator {onchain_creator[:12]}...", file=sys.stderr)
+
+            print("")
+            print("---")
+            print("")
+            role = "creator" if is_creator else "royalty recipient"
+            print(f"Analyzing {role}: {twitter or wallet[:12]}...", file=sys.stderr)
+            royalty_report = analyze_royalty_recipient(wallet, mint, twitter)
+            print(royalty_report)
 
 
 if __name__ == "__main__":

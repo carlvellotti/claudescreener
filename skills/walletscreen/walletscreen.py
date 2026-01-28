@@ -10,16 +10,25 @@ Usage:
 import sys
 import json
 import os
+import ssl
 import urllib.request
 import urllib.error
 from datetime import datetime, timezone
+
+# Known BAGS platform deployer wallets (these are infrastructure, not real creators)
+BAGS_PLATFORM_WALLETS = [
+    "BAGSB9TpGrZxQbEsrEznv5jXXdwyP6AXerN8aVRiAmcv",
+]
 
 
 def fetch_json(url: str, timeout: int = 15) -> dict | None:
     """Fetch JSON from URL with error handling."""
     try:
         req = urllib.request.Request(url, headers={"User-Agent": "WalletScreen/1.0"})
-        with urllib.request.urlopen(req, timeout=timeout) as response:
+        ssl_context = ssl.create_default_context()
+        ssl_context.check_hostname = False
+        ssl_context.verify_mode = ssl.CERT_NONE
+        with urllib.request.urlopen(req, timeout=timeout, context=ssl_context) as response:
             return json.loads(response.read().decode())
     except urllib.error.HTTPError as e:
         if e.code in (400, 404):
@@ -42,10 +51,13 @@ def load_env_var(var_name: str) -> str | None:
     if value:
         return value
 
+    script_dir = os.path.dirname(__file__)
     env_paths = [
         ".env",
-        os.path.join(os.path.dirname(__file__), ".env"),
-        os.path.join(os.path.dirname(__file__), "..", "..", ".env"),
+        os.path.join(script_dir, ".env"),
+        os.path.join(script_dir, "..", ".env"),
+        os.path.join(script_dir, "..", "..", ".env"),
+        os.path.join(script_dir, "..", "..", "..", ".env"),  # vault root
     ]
 
     for env_path in env_paths:
@@ -545,6 +557,26 @@ def main():
     if not is_valid_solana_address(wallet):
         print(f"Error: Invalid Solana address format: {wallet}")
         sys.exit(1)
+
+    # Check if this is a known BAGS platform wallet
+    if wallet in BAGS_PLATFORM_WALLETS:
+        print("# BAGS Platform Deployer Wallet")
+        print("")
+        print(f"**Wallet:** `{wallet[:8]}...{wallet[-8:]}`")
+        print("")
+        print("## Analysis Not Available")
+        print("")
+        print("This wallet is the **BAGS platform deployer** - it's infrastructure that deploys")
+        print("tokens on behalf of creators, not a real person's wallet.")
+        print("")
+        print("Analyzing this wallet won't give you useful information about any specific token creator.")
+        print("")
+        print("**Instead, use `/tokenscreen <token_address>`** to analyze a specific BAGS token.")
+        print("TokenScreen will automatically identify the real creator and royalty recipients.")
+        print("")
+        print("---")
+        print("*BAGS tokens are created through bags.fm - the platform handles deployment*")
+        sys.exit(0)
 
     # Check for Helius API key
     require_helius_api_key()
