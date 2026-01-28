@@ -73,4 +73,7 @@ Set as environment variable or create a `.env` file.
 - Helius free tier: max 100 transactions per call
 - Very new tokens may not have RugCheck data yet
 - Cannot detect coordinated multi-wallet operations
-- This is not financial advice - always DYOR
+
+## ⚠️ Disclaimer
+
+**This is not financial advice. No investment is 100% safe.** Wallet history is just one factor. Even clean wallets can rug, and new wallets can be legitimate. Never invest more than you can afford to lose. DYOR.

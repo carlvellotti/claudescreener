@@ -63,4 +63,7 @@ Set as environment variable or create a `.env` file.
 - Only analyzes Block 0 (first slot) - doesn't catch multi-block coordination
 - Cannot determine if wallets are truly linked (just same-block timing)
 - Very new tokens may not have full transaction indexing yet
-- This is not financial advice - DYOR
+
+## ⚠️ Disclaimer
+
+**This is not financial advice. No investment is 100% safe.** Same-block buying could be legitimate traders or coordinated scammers - this tool can't distinguish. Never invest more than you can afford to lose. DYOR.
